@@ -13,20 +13,20 @@ abstract class BaseCharacter<T extends Object> {
   2 - Attack: Increases the accuracy of your attacks.
   3 - Defense: Decrease chance you will be hit.
   4 - Melee Damage Bonus: Bonus to damage with Melee attacks.
-  5 - Magic Damage Bonus: Bonus to damage with Magic attacks.
+  5 - Casting Bonus: Bonus to casting with Magic.
   6 - Fort: Saving Throw based on physical resistance.
   7 - Reflex: Saving Throw based on reflexes and agility.
   8 - Will: Saving Throw based on mental resilience and willpower.
   9 - Crit Chance: Chance you will get a critical hit. 
   10 - Discount: Amount purchases are decreased by.
   */
-  List stats = <int> [/*Max HP*/ 10, /*Max MP*/10, /*ATK*/ 0, /*DEF*/ 10, /*DMG+*/ 0, 0, /*ST*/0, 0, 0, /*Crit%*/5, /*Discount */ 0];
+  List stats = <int> [/*Max HP*/ 10, /*Max MP*/10, /*ATK*/ 0, /*DEF*/ 10, /*DMG+*/ 0, /*Cast+*/0, /*ST*/0, 0, 0, /*Crit%*/5, /*Discount */ 0];
   List attributes = <Attribute> [
     Attribute("Strength", "Sheer physical power-boosts Hit Points and Melee Damage Bonus."),
     Attribute("Agility", "Reflexes and quick movement - boosts Reflex and Defense."),
     Attribute("Dexterity", "Finesse and skill with hands - boosts Attack."),
     Attribute("Endurance", "Stamina and resilience-boosts Hit Points and Fort."),
-    Attribute("Intelligence", "Knowledge and memory - boosts Magic Points and Magic Damage Bonus."),
+    Attribute("Intelligence", "Knowledge and memory - boosts Magic Points and Casting Bonus."),
     Attribute("Spirit", "Force of will and connection to the spiritual realm - boosts Magic Points and Will."),
     Attribute("Charisma", "Good looks and personality - boosts Defense and Discount."),
     Attribute("Luck", "Sheer blind luck - boosts Crit Chance and Saving Throws.")
@@ -118,7 +118,7 @@ class Attribute {
 
 class PlayerCharacter extends BaseCharacter{
   int xp = 0, xpNeeded = 10;
-  List traits = <Trait>[];
+  List traits = <Trait>[], spells = <Spell>[];
 
   PlayerCharacter(String nam, String jo, String spe, String por) {
    super.name = nam;
@@ -164,6 +164,8 @@ class PlayerCharacter extends BaseCharacter{
     }
   }
 
+  void castSpell(){}
+
 /*
 TypeNum effects:
 -0: Applies modifier to an attribute (0-7 on the array)
@@ -195,6 +197,8 @@ TypeNum effects:
     }
   }
 
+  
+
 }
 
 class Trait {
@@ -225,6 +229,24 @@ class MonsterCharacter extends BaseCharacter {
 
   void takeDamage (num damage) {
       super.modHP(-damage/(super.armorLevel));
+  }
+
+}
+
+class Spell {
+  
+  String spellName = "", spellDescription = "";
+
+  num spellCost = 0, spellPower = 0;
+
+  String effect = "";
+
+  Spell (String nam, String desc, num cost, num power, String eff) {
+    spellName = nam;
+    spellDescription = desc;
+    spellCost = cost;
+    spellPower = power;
+    effect = eff;
   }
 
 }

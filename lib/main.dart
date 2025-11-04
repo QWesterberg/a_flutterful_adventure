@@ -39,6 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   PlayerCharacter playerCharacter = PlayerCharacter("Ronan Blaidd", "Fighter", "Wolf", "assets/images/WolfFighter.png");
   List delveCombatEvents = [ComEvent(MonsterCharacter("Skeleton",5,20))];
 
+  List currentSpells = <Spell>[];
+
 
   int healthPotion = 0, magicPotion = 0, potionPrice = 5,
   weaponUpgradePrice = 100, armorUpgradePrice = 100;
@@ -73,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[6].val = 6;
       playerCharacter.attributes[7].val = 4;
       playerCharacter.baseWeaponDie = 10;
+      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
     } else {
 
     }
@@ -138,10 +141,25 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _castHealing () {
+  void castSpell(int index) {
+    if (playerCharacter.currentMP >= playerCharacter.spells[index].spellCost) {
+      if (playerCharacter.spells[index].effect == "healing") {
+        healing(playerCharacter.spells[index].spellPower);
+      }
+      playerCharacter.currentMP -= playerCharacter.spells[index].spellCost;
+    }  
+    }
+
+  void healing (num spellPower) {
     if (playerCharacter.currentMP > 0) {
-      playerCharacter.modHP((playerCharacter.stats[5] + 2)/2);
-      playerCharacter.modMP(-5);
+      setState(() {
+        if (playerCharacter.currentHP < playerCharacter.stats[0]) {
+          playerCharacter.modHP((playerCharacter.stats[5] * 2)/2 + spellPower);
+        } else {
+          playerCharacter.fillHP();
+        }
+        
+      });
     }
   }
 
@@ -207,6 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (playerCharacter.gold >= armorUpgradePrice) {
         playerCharacter.gold -= armorUpgradePrice; playerCharacter.armorLevel++;
         armorUpgradePrice = 100 * playerCharacter.armorLevel;
+        setPrices();
       }
       });
   }
@@ -215,6 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() { if (playerCharacter.gold >= weaponUpgradePrice) {
         playerCharacter.gold -= weaponUpgradePrice; playerCharacter.weaponLevel++;
         weaponUpgradePrice = 100 * playerCharacter.weaponLevel;
+        setPrices();
       }});
   }
 
@@ -231,6 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 50,
           children: <Widget>[
             Column(
@@ -252,14 +273,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   Text("Attributes", style: TextStyle(fontSize: 15),),
-                  Text("${playerCharacter.attributes[0].name}: ${playerCharacter.attributes[0].val}"),
-                  Text("${playerCharacter.attributes[1].name}: ${playerCharacter.attributes[1].val}"),
-                  Text("${playerCharacter.attributes[2].name}: ${playerCharacter.attributes[2].val}"),
-                  Text("${playerCharacter.attributes[3].name}: ${playerCharacter.attributes[3].val}"),
-                  Text("${playerCharacter.attributes[4].name}: ${playerCharacter.attributes[4].val}"),
-                  Text("${playerCharacter.attributes[5].name}: ${playerCharacter.attributes[5].val}"),
-                  Text("${playerCharacter.attributes[6].name}: ${playerCharacter.attributes[6].val}"),
-                  Text("${playerCharacter.attributes[7].name}: ${playerCharacter.attributes[7].val}"),
+                  SizedBox(width: 250,height: 170, child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.all(8),
+                      itemCount: 8,
+                      itemBuilder: (context, index) {
+                        return Text("${playerCharacter.attributes[index].name}: ${playerCharacter.attributes[index].val}");
+                      }),
+                    )
+                  
               ],
             ),
             Column(
@@ -271,15 +294,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(onPressed: _delve, child: Text("DELVE!")),
                 Text("LOG"),
                   Divider(),
-                  SizedBox(width: 500, height: 500,
-                  child: Expanded(child: ListView.builder(
+                  SizedBox( width: 400, height: 300,
+                  child: ListView.builder(
                       scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
                       padding: EdgeInsets.all(8),
                       itemCount: eventLog.length,
                       itemBuilder: (context, index) {
                         return Text("$index. ${eventLog[index]}");
                       }),
-                    ))
+                    )
                   
                   
                   
@@ -317,7 +341,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
                 Text("SPELLS", style: TextStyle(fontSize: 25)),
-                ElevatedButton(onPressed: _castHealing, child: Text("Cast Healing (5 MP)"))
+                SizedBox(
+                  width: 250,height: 200,
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      padding: EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      itemCount: playerCharacter.spells.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                        child: ListTile(
+                        title: Text( "${playerCharacter.spells[index].spellName} (MP: ${playerCharacter.spells[index].spellCost})", style: Theme.of(context).textTheme.bodyLarge,),
+                       trailing: IconButton(icon: Icon(Icons.star, color: Theme.of(context).colorScheme.primary),
+                        onPressed: () => castSpell(index),
+                      ),
+                    ),
+                  );
+                }),
+              )
+              
               ],
             )
           ],
