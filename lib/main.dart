@@ -37,7 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
   int _seconds = 0;
   PlayerCharacter playerCharacter = PlayerCharacter("Ronan Blaidd", "Fighter", "Wolf", "assets/images/WolfFighter.png");
-  List delveCombatEvents = [ComEvent(MonsterCharacter("Skeleton",5,20))];
+  List delveCombatEvents = [
+  ComEvent(MonsterCharacter("crumbling skeleton",5,5, 3, 0)),ComEvent(MonsterCharacter("limping zombie",5,5, 3, 1)),
+  ComEvent(MonsterCharacter("small slime",5,5, 3, 2)),ComEvent(MonsterCharacter("imp",6,6, 3, 3)),
+  ComEvent(MonsterCharacter("skeleton",5,8, 5, 0)),ComEvent(MonsterCharacter("zombie",3,8, 5, 1)),
+  ];
 
   List currentSpells = <Spell>[];
 
@@ -99,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (st > 10) {
           eventLog.add("You narrowly avoid a flying arrow from a trap!");
         } else {
-          eventLog.add("You flying arrow from a trap strikes you!");
+          eventLog.add("A flying arrow from a trap strikes you!");
           playerCharacter.modHP((-Random().nextInt(4) - 1)/playerCharacter.armorLevel);
         }
         playerCharacter.xp++;
@@ -200,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {   
       if (magicPotion > 0) {
         playerCharacter.modMP(5);
-        healthPotion--;
+        magicPotion--;
       }
       });
   }

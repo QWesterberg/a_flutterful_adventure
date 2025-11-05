@@ -160,7 +160,10 @@ class PlayerCharacter extends BaseCharacter{
 
   void attacked (num attack, num damage) {
     if (attack > stats[3]){
-      super.modHP(-damage/(super.armorLevel));
+      if (damage > super.armorLevel) {
+        super.modHP(- (damage).toDouble());
+      }
+      
     }
   }
 
@@ -209,14 +212,45 @@ class Trait {
 }
 
 class MonsterCharacter extends BaseCharacter {
-  int xpGain = 0, goldGain = 0;
+  int xpGain = 0, goldGain = 0, typeInt = 0;
 
   bool isDead = false;
 
-  MonsterCharacter(String nam, int xp, int gol) {
+  MonsterCharacter(String nam, int xp, int gol, int lvl, int type) {
     super.name = nam;
     xpGain = xp;
     goldGain = gol;
+    super.level = lvl;
+    typeInt = type;
+  }
+  /*
+  Types: 
+  -0: Boney Undead (Skeletons of all kinds): +1 Agility, Dexterity, flat 3 to Intelligence, Spirit, Luck
+  -1: Fleshy Undead (Zombies of all kinds): +4 Strength and Endurance, -2 Agility and Dexterity, flat 3 to everything else
+  -2: Gooey (Oozes, Jellies, slimes): +1 to Agility, Dexterity, Endurance, -1 to Intelligence, Spirit
+  -3: Demonic (Demons, Imps, Hellhounds):+ 1 to everything
+  Feel free to add more!
+  */
+
+  void monsterInit() {
+    super.setRandAttributes(super.level, 5);
+    switch(typeInt) {
+      case 0:
+      super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[4]..setVal(3); super.attributes[5].setVal(3); super.attributes[7].setVal(3);
+      case 1:
+      super.attributes[0].upVal(4); super.attributes[1].upVal(-2); super.attributes[2].upVal(-2); super.attributes[3].upVal(4);      
+      super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[6].setVal(3); super.attributes[7].setVal(3);
+      case 2:
+      super.attributes[1].upVal(-1); super.attributes[2].upVal(-1); super.attributes[3].upVal(1);      
+      super.attributes[4].upVal(-1); super.attributes[5].upVal(-1);
+      case 3:
+      super.attributes[0].upVal(1); super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[3].upVal(1);      
+      super.attributes[4].upVal(1); super.attributes[5].upVal(1); super.attributes[6].upVal(1); super.attributes[7].upVal(1);
+      super.baseWeaponDie = 8;
+      default: 
+      super.setRandAttributes(super.level, 5);
+    }
+    super.setBaseStats();
   }
 
   num monsterAttack () {
