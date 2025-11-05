@@ -236,7 +236,7 @@ class MonsterCharacter extends BaseCharacter {
     super.setRandAttributes(super.level, 5);
     switch(typeInt) {
       case 0:
-      super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[4]..setVal(3); super.attributes[5].setVal(3); super.attributes[7].setVal(3);
+      super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[7].setVal(3);
       case 1:
       super.attributes[0].upVal(4); super.attributes[1].upVal(-2); super.attributes[2].upVal(-2); super.attributes[3].upVal(4);      
       super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[6].setVal(3); super.attributes[7].setVal(3);
