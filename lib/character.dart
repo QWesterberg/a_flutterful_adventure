@@ -34,6 +34,8 @@ abstract class BaseCharacter<T extends Object> {
 
   double currentHP = 10, currentMP = 10;
 
+  List spells = <Spell>[];
+
   void setName(String string) { name = string; }
 
   void setJob(String string) {  job = string; }
@@ -60,12 +62,32 @@ abstract class BaseCharacter<T extends Object> {
       currentHP = (stats[0])/2 * 2;
     }
   }
+  
+  bool doesCrit () {
+    int critRoll = Random().nextInt(100);
+    if (critRoll <= stats[9]) {
+      // ignore: avoid_print
+      print("CRITS!");
+      return true;
+    }
+    return false;
+  }
 
   void fillHP() { currentHP = (stats[0])/2 * 2;}
 
   void modMP(double a) { currentMP += a;
     if (currentMP > stats[1]) {
       currentMP =(stats[1])/2 * 2;
+    }
+  }
+
+  bool makeSavingThrow(int save, int dc) {
+    num st = Random().nextInt(20);
+    st += stats[save];
+    if (dc > st) {
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -118,7 +140,7 @@ class Attribute {
 
 class PlayerCharacter extends BaseCharacter{
   int xp = 0, xpNeeded = 10;
-  List traits = <Trait>[], spells = <Spell>[];
+  List traits = <Trait>[];
 
   PlayerCharacter(String nam, String jo, String spe, String por) {
    super.name = nam;
@@ -151,7 +173,11 @@ class PlayerCharacter extends BaseCharacter{
   }
 
   num weaponDamage() {
-    return Random().nextInt(super.baseWeaponDie) + stats[4];
+    num damage = Random().nextInt(super.baseWeaponDie) + stats[4];
+    if (super.doesCrit()) {
+      return damage * 2;
+    }
+    return damage;
   }
 
   num spellDamage(int spellDamageDie) {
@@ -166,8 +192,6 @@ class PlayerCharacter extends BaseCharacter{
       
     }
   }
-
-  void castSpell(){}
 
 /*
 TypeNum effects:
@@ -216,6 +240,8 @@ class MonsterCharacter extends BaseCharacter {
 
   bool isDead = false;
 
+  bool canCast = false;
+
   MonsterCharacter(String nam, int xp, int gol, int lvl, int type) {
     super.name = nam;
     xpGain = xp;
@@ -232,6 +258,8 @@ class MonsterCharacter extends BaseCharacter {
   Feel free to add more!
   */
 
+  List spellSTInts = <int>[];
+
   void monsterInit() {
     super.setRandAttributes(super.level, 5);
     switch(typeInt) {
@@ -247,10 +275,40 @@ class MonsterCharacter extends BaseCharacter {
       super.attributes[0].upVal(1); super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[3].upVal(1);      
       super.attributes[4].upVal(1); super.attributes[5].upVal(1); super.attributes[6].upVal(1); super.attributes[7].upVal(1);
       super.baseWeaponDie = 8;
+      canCast = true;
+      spellSTInts.add(7);
       default: 
       super.setRandAttributes(super.level, 5);
     }
     super.setBaseStats();
+  }
+
+  /*
+  6 - Fort: Saving Throw based on physical resistance.
+  7 - Reflex: Saving Throw based on reflexes and agility.
+  8 - Will: Saving Throw based on mental resilience and willpower.
+  */
+
+  void attackPlayer (PlayerCharacter pc) {
+    if (super.currentMP >= 5) {
+      int st = spellSTInts[Random().nextInt(spellSTInts.length)];
+      autoSpellAttack(pc, st, attributes[4].val*2, (level + stats[5]).toInt());
+    } else {
+      autoAttack(pc);
+    }
+  }
+
+  void autoAttack (PlayerCharacter pc) {
+    pc.attacked(this.monsterAttack(), this.monsterDamage());
+  }
+
+  void autoSpellAttack (PlayerCharacter pc, int st, int dc, int dmg) {
+    double x = (Random().nextInt(dmg) + stats[5])/2;
+    if (pc.makeSavingThrow(st, dc) == false) {
+      x*= 2;
+    }
+    pc.modHP(-x);
+    currentMP-= 5;
   }
 
   num monsterAttack () {

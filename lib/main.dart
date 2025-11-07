@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _delve() {
     if (playerCharacter.currentHP > 0) {
       setState(() {
-      int delveRand = Random().nextInt(7);
+      int delveRand = Random().nextInt(_seconds) % 8;
       if (delveRand == 0) {
         playerCharacter.gold += 5;
         eventLog.add("You find a small pile of gold!");
@@ -111,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       else if (delveRand == 2) {
         /*Encounter*/
-        int en = Random().nextInt(delveRand*_seconds) % delveCombatEvents.length;
+        int en = Random().nextInt(_seconds) % delveCombatEvents.length;
         eventLog.add(delveCombatEvents[en].fight(playerCharacter));
       }
       else if (delveRand == 3) {
@@ -128,18 +128,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       else if (delveRand == 4) {
         /*??*/
-        eventLog.add("You find a small pile of gold!");
-        playerCharacter.gold++;
+        eventLog.add("${playerCharacter.name} wanders aimlessly through the dungeons.");
+        events++;
       }
       else if (delveRand == 5) {
         /*??*/
-        eventLog.add("You find a small pile of gold!");
-        playerCharacter.gold++;
+        eventLog.add("${playerCharacter.name} contemplates past events.");
+        events++;
       }
       else if (delveRand == 6) {
         /*??*/
-        eventLog.add("You find a small pile of gold!");
-        playerCharacter.gold++;
+        eventLog.add("${playerCharacter.name} eats a weird bug and doesn't even care.");
+        events++;
+      }
+      else if (delveRand == 7) {
+        /*Encounter*/
+        int en = Random().nextInt(delveRand*_seconds) % delveCombatEvents.length;
+        eventLog.add(delveCombatEvents[en].fight(playerCharacter));
       }
     });
     }

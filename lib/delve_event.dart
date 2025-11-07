@@ -18,7 +18,7 @@ import "character.dart";
         monster.takeDamage(pc.weaponDamage());
       }
       if (monster.currentHP > 0) {
-        pc.attacked(monster.monsterAttack(), monster.monsterDamage());
+        monster.autoAttack(pc);
       }
       log("Player: ${pc.currentHP} Monster ${monster.currentHP}");
     }
