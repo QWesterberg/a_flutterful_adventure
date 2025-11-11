@@ -36,22 +36,35 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
   int _seconds = 0;
+
+  /*Player Character*/
   PlayerCharacter playerCharacter = PlayerCharacter("Ronan Blaidd", "Fighter", "Wolf", "assets/images/WolfFighter.png");
+  
+  List playerCharacterNames = ["Ronan Blaidd", "Etta Hilsby"];
+
+
+  /*Event Lists*/
   List delveCombatEvents = [
-  ComEvent(MonsterCharacter("crumbling skeleton",5,5, 3, 0)),ComEvent(MonsterCharacter("limping zombie",5,5, 3, 1)),
-  ComEvent(MonsterCharacter("small slime",5,5, 3, 2)),ComEvent(MonsterCharacter("imp",6,6, 3, 3)),
-  ComEvent(MonsterCharacter("skeleton",5,8, 5, 0)),ComEvent(MonsterCharacter("zombie",3,8, 5, 1)),
+    /*String nam, int xp, int gol, int lvl, int type */
+  ComEvent(MonsterCharacter("crumbling skeleton",5,5, 3, 0)),
+  ComEvent(MonsterCharacter("limping zombie",5,5, 3, 1)),
+  ComEvent(MonsterCharacter("small slime",5,5, 3, 2)),
+  ComEvent(MonsterCharacter("imp",6,6, 3, 3)),
+  ComEvent(MonsterCharacter("skeleton",5,8, 5, 0)),
+  ComEvent(MonsterCharacter("zombie",3,8, 5, 1)),
   ];
   List delveTrapEvents = [
-    TrapEvent(6, (Random().nextInt(6) + 3), 10, " breathes in poisonous spores from the mushrooms lining the nearby walls!", 
+    /*int st, double dmg, int dc, String hurtString, String missString */
+    TrapEvent(6, (5), 10, " breathes in poisonous spores from the mushrooms lining the nearby walls!", 
     " is able to stop from breathing in the poisonous spores from the mushrooms lining the nearby walls."),
-    TrapEvent(7, (Random().nextInt(6) + 3), 10, " narrowly avoids a flying arrow from a trap!", 
-    " is struck by a flying arrow from a slit in the wall!"),
-    TrapEvent(8, (Random().nextInt(6) + 3), 10, " takes a lashing of psychic energy from a mysterious purple orb!", 
+    TrapEvent(7, (5), 10, " is struck by a flying arrow from a slit in the wall!", 
+    " narrowly avoids a flying arrow from a trap!"),
+    TrapEvent(8, (5), 10, " takes a lashing of psychic energy from a mysterious purple orb!", 
     " avoids staring at a mysterious purple orb."),
   ];
 
   List delveTreasureEvents = [
+    /*int gold, String treasureString*/
     TreasureEvent(5, " finds some gold coins!"),
     TreasureEvent(1, " finds just a piece of gold."),
     TreasureEvent(10, " finds just enough silver coins to equal ten pieces of gold!"),
@@ -60,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   List delveFillerEvents = [
+    /*String message*/
     FillerEvent(" eats a weird bug and doesn't even care."), 
     FillerEvent("  contemplates past events."),
     FillerEvent(" wanders aimlessly through the dungeons."),
@@ -67,30 +81,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List currentSpells = <Spell>[];
 
-
   int healthPotion = 0, magicPotion = 0, potionPrice = 5,
   weaponUpgradePrice = 100, armorUpgradePrice = 100;
-  
-
-  
 
   List eventLog = <String> ["An adventurer stand at the precipe of the dungeon, ready to advance into its depths."];
   int events = 1;
-  
 
   @override
 
   void initState() {
     super.initState();
 
-    setInitialPlayerCharacterStats();
+    int en = Random().nextInt(playerCharacterNames.length);
+    setInitialPlayerCharacterStats(playerCharacterNames[en]);
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       timeEffect();
     });
   }
 
-  void setInitialPlayerCharacterStats () {
+  void setInitialPlayerCharacterStats (String name) {
+    playerCharacter.name = name;
     if (playerCharacter.name == "Ronan Blaidd") {
       playerCharacter.attributes[0].val = 8;
       playerCharacter.attributes[1].val = 6;
@@ -102,8 +113,30 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[7].val = 4;
       playerCharacter.baseWeaponDie = 10;
       playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
-      playerCharacter.setPronouns("He","Him","His");
-    } else {
+      playerCharacter.setPronouns("He","His","Him");
+      playerCharacter.setPortrait("assets/images/WolfFighter.png");
+      playerCharacter.setSpecies("Wolf");
+      playerCharacter.setJob("Fighter");
+      playerCharacter.level = 1;
+    } else if (playerCharacter.name == "Etta Hilsby") {
+      playerCharacter.attributes[0].val = 3;
+      playerCharacter.attributes[1].val = 5;
+      playerCharacter.attributes[2].val = 5;
+      playerCharacter.attributes[3].val = 5;
+      playerCharacter.attributes[4].val = 10;
+      playerCharacter.attributes[5].val = 10;
+      playerCharacter.attributes[6].val = 4;
+      playerCharacter.attributes[7].val = 6;
+      playerCharacter.baseWeaponDie = 25;
+      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
+      playerCharacter.spells.add(Spell("Insight", "Gather knowledge through magic.", 10, 0, "xpGain"));
+      playerCharacter.setPronouns("She","Her","Her");
+      playerCharacter.setPortrait("assets/images/MoleWizard.png");
+      playerCharacter.setSpecies("Mole");
+      playerCharacter.setJob("Wizard");
+      playerCharacter.level = 1;
+    }
+    else {
 
     }
     playerCharacter.setBaseStats();
@@ -158,8 +191,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void castSpell(int index) {
     if (playerCharacter.currentMP >= playerCharacter.spells[index].spellCost) {
+      num x = (playerCharacter.spells[index].spellPower + playerCharacter.stats[5]);
       if (playerCharacter.spells[index].effect == "healing") {
-        healing(playerCharacter.spells[index].spellPower);
+        healing(x);
+      } else if (playerCharacter.spells[index].effect == "xpGain") {
+        playerCharacter.xp += x.toInt();
+      } else if (playerCharacter.spells[index].effect == "goldGain") {
+        playerCharacter.gold += x.toInt();
       }
       playerCharacter.currentMP -= playerCharacter.spells[index].spellCost;
     }  
@@ -169,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (playerCharacter.currentMP > 0) {
       setState(() {
         if (playerCharacter.currentHP < playerCharacter.stats[0]) {
-          playerCharacter.modHP((playerCharacter.stats[5] * 2)/2 + spellPower);
+          playerCharacter.modHP(spellPower.toDouble());
         } else {
           playerCharacter.fillHP();
         }
@@ -205,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void useHealthPotion() {
     setState(() {   
       if (healthPotion > 0) {
-        playerCharacter.modHP(5);
+        playerCharacter.modHP(10);
         healthPotion--;
       }
       });

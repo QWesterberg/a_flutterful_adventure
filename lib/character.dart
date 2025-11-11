@@ -108,8 +108,8 @@ abstract class BaseCharacter<T extends Object> {
     for (int i = 0; i<8; i++) {
       attributes[i].updateMod();
     }
-    stats[0] = attributes[0].mod*5 + attributes[3].mod*10 + hpMod;
-    stats[1] = attributes[4].mod*5 + attributes[5].mod*10 + mpMod;
+    stats[0] = attributes[0].mod + attributes[3].mod*2 + hpMod;
+    stats[1] = attributes[4].mod + attributes[5].mod*2 + mpMod;
     stats[2] = attributes[2].mod;
     stats[3] = 10 + attributes[1].mod + attributes[6].mod;
     stats[4] = attributes[0].mod;
