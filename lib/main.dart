@@ -42,6 +42,28 @@ class _MyHomePageState extends State<MyHomePage> {
   ComEvent(MonsterCharacter("small slime",5,5, 3, 2)),ComEvent(MonsterCharacter("imp",6,6, 3, 3)),
   ComEvent(MonsterCharacter("skeleton",5,8, 5, 0)),ComEvent(MonsterCharacter("zombie",3,8, 5, 1)),
   ];
+  List delveTrapEvents = [
+    TrapEvent(6, (Random().nextInt(6) + 3), 10, " breathes in poisonous spores from the mushrooms lining the nearby walls!", 
+    " is able to stop from breathing in the poisonous spores from the mushrooms lining the nearby walls."),
+    TrapEvent(7, (Random().nextInt(6) + 3), 10, " narrowly avoids a flying arrow from a trap!", 
+    " is struck by a flying arrow from a slit in the wall!"),
+    TrapEvent(8, (Random().nextInt(6) + 3), 10, " takes a lashing of psychic energy from a mysterious purple orb!", 
+    " avoids staring at a mysterious purple orb."),
+  ];
+
+  List delveTreasureEvents = [
+    TreasureEvent(5, " finds some gold coins!"),
+    TreasureEvent(1, " finds just a piece of gold."),
+    TreasureEvent(10, " finds just enough silver coins to equal ten pieces of gold!"),
+    TreasureEvent(3, " finds a large pile of copper coins...equal to 3 gold."),
+    TreasureEvent(25, " finds a rough garnet!"),
+  ];
+
+  List delveFillerEvents = [
+    FillerEvent(" eats a weird bug and doesn't even care."), 
+    FillerEvent("  contemplates past events."),
+    FillerEvent(" wanders aimlessly through the dungeons."),
+  ];
 
   List currentSpells = <Spell>[];
 
@@ -52,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   
 
-  List eventLog = <String> ["You stand at the precipe of the dungeon, ready to advance into its depths."];
+  List eventLog = <String> ["An adventurer stand at the precipe of the dungeon, ready to advance into its depths."];
   int events = 1;
   
 
@@ -80,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[7].val = 4;
       playerCharacter.baseWeaponDie = 10;
       playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
+      playerCharacter.setPronouns("He","Him","His");
     } else {
 
     }
@@ -92,59 +115,42 @@ class _MyHomePageState extends State<MyHomePage> {
   void _delve() {
     if (playerCharacter.currentHP > 0) {
       setState(() {
-      int delveRand = Random().nextInt(_seconds) % 8;
-      if (delveRand == 0) {
-        playerCharacter.gold += 5;
-        eventLog.add("You find a small pile of gold!");
-        events++;
-      } else if (delveRand == 1) {
-        num st = Random().nextInt(20);
-        st += playerCharacter.stats[7];
-        if (st > 10) {
-          eventLog.add("You narrowly avoid a flying arrow from a trap!");
-        } else {
-          eventLog.add("A flying arrow from a trap strikes you!");
-          playerCharacter.modHP((-Random().nextInt(4) - 1)/playerCharacter.armorLevel);
-        }
+      int delveRand = Random().nextInt(_seconds + 100) % 100;
+      if ((delveRand < 10) && (delveRand > 0)) {
+        int en = Random().nextInt(delveRand*_seconds + delveTreasureEvents.length) % delveTreasureEvents.length;
+        eventLog.add(delveTreasureEvents[en].findTreasure(playerCharacter));
         playerCharacter.xp++;
         events++;
       }
-      else if (delveRand == 2) {
+      else if ((delveRand < 33) && (delveRand >= 10)) {
         /*Encounter*/
-        int en = Random().nextInt(_seconds) % delveCombatEvents.length;
+        int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
         eventLog.add(delveCombatEvents[en].fight(playerCharacter));
-      }
-      else if (delveRand == 3) {
-        num st = Random().nextInt(20);
-        st += playerCharacter.stats[6];
-        if (st > 10) {
-          eventLog.add("You are able to hold your breath as you walk through a room full of poisonous gas!");
-        } else {
-          eventLog.add("You fail to hold your breath as you walk through a room of poisonous gas!");
-          playerCharacter.modHP(-Random().nextInt(4) - 1);
-        }
-        playerCharacter.xp++;
         events++;
       }
-      else if (delveRand == 4) {
-        /*??*/
-        eventLog.add("${playerCharacter.name} wanders aimlessly through the dungeons.");
+      else if ((delveRand < 50) && (delveRand >= 33)) {
+        /*Trap*/
+        int en = Random().nextInt(delveRand*_seconds + delveTrapEvents.length) % delveTrapEvents.length;
+        eventLog.add(delveTrapEvents[en].trap(playerCharacter));
         events++;
       }
-      else if (delveRand == 5) {
-        /*??*/
-        eventLog.add("${playerCharacter.name} contemplates past events.");
-        events++;
-      }
-      else if (delveRand == 6) {
-        /*??*/
-        eventLog.add("${playerCharacter.name} eats a weird bug and doesn't even care.");
-        events++;
-      }
-      else if (delveRand == 7) {
+      else if ((delveRand < 63) && (delveRand >= 50)) {
         /*Encounter*/
-        int en = Random().nextInt(delveRand*_seconds) % delveCombatEvents.length;
+        int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
         eventLog.add(delveCombatEvents[en].fight(playerCharacter));
+        events++;
+      }
+      else if ((delveRand < 72) && (delveRand >= 63)) {
+        /*Trap*/
+        int en = Random().nextInt(delveRand*_seconds + delveTrapEvents.length) % delveTrapEvents.length;
+        eventLog.add(delveTrapEvents[en].trap(playerCharacter));
+        events++;
+      }
+       else {
+        /*Filler*/
+        int en = Random().nextInt(delveRand*_seconds + delveFillerEvents.length) % delveFillerEvents.length;
+        eventLog.add(delveFillerEvents[en].happen(playerCharacter));
+        events++;
       }
     });
     }
@@ -173,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void timeEffect () {
-      setState(() {   _seconds++;    });
+      setState(() {   _seconds++;  playerCharacter.modHP(0.1); playerCharacter.modMP(0.1);});
   }
 
   void increaseGold(int y) {
@@ -303,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(onPressed: _delve, child: Text("DELVE!")),
                 Text("LOG"),
                   Divider(),
-                  SizedBox( width: 400, height: 300,
+                  SizedBox( width: 400, height:  MediaQuery.of(context).size.height - 300,
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,

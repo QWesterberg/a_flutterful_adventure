@@ -4,6 +4,8 @@ import "dart:math";
 abstract class BaseCharacter<T extends Object> {
 
   String name = "", job = "", species = "", portraitID = "";   
+
+  String lp1 = "ze", lp2 = "zir", lp3 = "zem", p1 = "Ze", p2 = "Zir", p3 = "Zem";
   
   int gold = 0, level = 1, hpMod = 10, mpMod = 10, armorLevel = 1, weaponLevel = 1, baseWeaponDie = 6;
 
@@ -39,6 +41,15 @@ abstract class BaseCharacter<T extends Object> {
   void setName(String string) { name = string; }
 
   void setJob(String string) {  job = string; }
+
+  void setPronouns (String pronoun1, String pronoun2, String pronoun3) {
+    p1 = pronoun1;
+    p2 = pronoun2;
+    p3 = pronoun3;
+    lp1 = pronoun1.toLowerCase();
+    lp2 = pronoun2.toLowerCase();
+    lp3 = pronoun3.toLowerCase();
+  }
 
 
   void setSpecies(String string) {  species = string;  }
@@ -299,7 +310,7 @@ class MonsterCharacter extends BaseCharacter {
   }
 
   void autoAttack (PlayerCharacter pc) {
-    pc.attacked(this.monsterAttack(), this.monsterDamage());
+    pc.attacked(monsterAttack(), monsterDamage());
   }
 
   void autoSpellAttack (PlayerCharacter pc, int st, int dc, int dmg) {
