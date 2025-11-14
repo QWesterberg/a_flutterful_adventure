@@ -212,7 +212,13 @@ TypeNum effects:
 -3: Percentile increase to stat (same as 1)
 (Feel free to come up with more!)
 */
-  void applyTrait(Trait trait) {
+void applyTraits() {
+  for (int i = 0; i<traits.length; i++) {
+    applyTrait(traits[i]);
+  }
+}
+
+void applyTrait(Trait trait) {
     if (trait.typeNum == 0) {
       super.attributes[trait.typeNum2] = attributes[trait.typeNum2] + trait.mod;
     }
@@ -221,12 +227,12 @@ TypeNum effects:
     }
     else if (trait.typeNum == 2) {
       if (trait.typeNum2 == 0) {
-        if (super.currentHP < super.stats[0]) {          super.currentHP += trait.mod/100;        }
-        else {          super.currentHP = super.stats[0];        }
+        if (super.currentHP < super.stats[0]) {          super.modHP(trait.mod/100) ;        }
+        else {          super.fillHP();        }
       }
-      if (trait.typeNum2 == 0) {
-        if (super.currentMP < super.stats[1]) {          super.currentMP += trait.mod/100;        }
-        else {          super.currentMP = super.stats[1];        }
+      if (trait.typeNum2 == 1) {
+        if (super.currentMP < super.stats[1]) {          super.modMP(trait.mod/100) ;        }
+        else {          super.fillMP();        }
       }
       
     }
@@ -263,7 +269,7 @@ class MonsterCharacter extends BaseCharacter {
   /*
   Types: 
   -0: Boney Undead (Skeletons of all kinds): +1 Agility, Dexterity, flat 3 to Intelligence, Spirit, Luck
-  -1: Fleshy Undead (Zombies of all kinds): +4 Strength and Endurance, -2 Agility and Dexterity, flat 3 to everything else
+  -1: Fleshy Undead (Zombies of all kinds): +4 Strength and Endurance, -3 Agility and Dexterity, flat 3 to everything else
   -2: Gooey (Oozes, Jellies, slimes): +1 to Agility, Dexterity, Endurance, -1 to Intelligence, Spirit
   -3: Demonic (Demons, Imps, Hellhounds):+ 1 to everything
   Feel free to add more!
@@ -277,7 +283,7 @@ class MonsterCharacter extends BaseCharacter {
       case 0:
       super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[7].setVal(3);
       case 1:
-      super.attributes[0].upVal(4); super.attributes[1].upVal(-2); super.attributes[2].upVal(-2); super.attributes[3].upVal(4);      
+      super.attributes[0].upVal(4); super.attributes[1].upVal(-3); super.attributes[2].upVal(-3); super.attributes[3].upVal(4);      
       super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[6].setVal(3); super.attributes[7].setVal(3);
       case 2:
       super.attributes[1].upVal(-1); super.attributes[2].upVal(-1); super.attributes[3].upVal(1);      

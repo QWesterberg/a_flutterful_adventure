@@ -37,6 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? _timer;
   int _seconds = 0;
 
+  List eventPrintColors = <Color> [];
+
   /*Player Character*/
   PlayerCharacter playerCharacter = PlayerCharacter("Ronan Blaidd", "Fighter", "Wolf", "assets/images/WolfFighter.png");
   
@@ -46,12 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
   /*Event Lists*/
   List delveCombatEvents = [
     /*String nam, int xp, int gol, int lvl, int type */
-  ComEvent(MonsterCharacter("crumbling skeleton",5,5, 3, 0)),
-  ComEvent(MonsterCharacter("limping zombie",5,5, 3, 1)),
-  ComEvent(MonsterCharacter("small slime",5,5, 3, 2)),
-  ComEvent(MonsterCharacter("imp",6,6, 3, 3)),
-  ComEvent(MonsterCharacter("skeleton",5,8, 5, 0)),
-  ComEvent(MonsterCharacter("zombie",3,8, 5, 1)),
+  ComEvent(MonsterCharacter("crumbling skeleton", 5, 10, 3, 0)),
+  ComEvent(MonsterCharacter("limping zombie", 5, 12, 3, 1)),
+  ComEvent(MonsterCharacter("small slime", 5, 8, 3, 2)),
+  ComEvent(MonsterCharacter("imp", 6, 12, 3, 3)),
+  ComEvent(MonsterCharacter("skeleton", 5, 16, 5, 0)),
+  ComEvent(MonsterCharacter("zombie",3, 20, 5, 1)),
   ];
   List delveTrapEvents = [
     /*int st, double dmg, int dc, String hurtString, String missString */
@@ -70,13 +72,18 @@ class _MyHomePageState extends State<MyHomePage> {
     TreasureEvent(10, " finds just enough silver coins to equal ten pieces of gold!"),
     TreasureEvent(3, " finds a large pile of copper coins...equal to 3 gold."),
     TreasureEvent(25, " finds a rough garnet!"),
+    TreasureEvent(40, " finds a finely-cut garnet!"),
   ];
 
   List delveFillerEvents = [
     /*String message*/
     FillerEvent(" eats a weird bug and doesn't even care."), 
     FillerEvent("  contemplates past events."),
-    FillerEvent(" wanders aimlessly through the dungeons."),
+    FillerEvent(" wanders aimlessly for a moment before finding the way forward."),
+    FillerEvent(" wonders what lies deep down in this dungeon."), 
+    FillerEvent(" sees a skeleton, but it isn't moving."),
+    FillerEvent(" wonders what is for dinner."),
+    
   ];
 
   List currentSpells = <Spell>[];
@@ -94,6 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     int en = Random().nextInt(playerCharacterNames.length);
     setInitialPlayerCharacterStats(playerCharacterNames[en]);
+    eventPrintColors.add(Colors.green);
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       timeEffect();
@@ -112,11 +120,12 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[6].val = 6;
       playerCharacter.attributes[7].val = 4;
       playerCharacter.baseWeaponDie = 10;
-      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
+      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 15, 3, "healing"));
       playerCharacter.setPronouns("He","His","Him");
       playerCharacter.setPortrait("assets/images/WolfFighter.png");
       playerCharacter.setSpecies("Wolf");
       playerCharacter.setJob("Fighter");
+      playerCharacter.traits.add(Trait("Healing Wind", "Naturally heals faster.", 15, 2, 0));
       playerCharacter.level = 1;
     } else if (playerCharacter.name == "Etta Hilsby") {
       playerCharacter.attributes[0].val = 3;
@@ -134,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.setPortrait("assets/images/MoleWizard.png");
       playerCharacter.setSpecies("Mole");
       playerCharacter.setJob("Wizard");
+      playerCharacter.traits.add(Trait("Winds of Magic", "Naturally gains magic back faster.", 5, 2, 1));
       playerCharacter.level = 1;
     }
     else {
@@ -150,6 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
       int delveRand = Random().nextInt(_seconds + 100) % 100;
       if ((delveRand < 10) && (delveRand > 0)) {
+        eventPrintColors.add(Colors.amber);
         int en = Random().nextInt(delveRand*_seconds + delveTreasureEvents.length) % delveTreasureEvents.length;
         eventLog.add(delveTreasureEvents[en].findTreasure(playerCharacter));
         playerCharacter.xp++;
@@ -157,30 +168,35 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       else if ((delveRand < 33) && (delveRand >= 10)) {
         /*Encounter*/
+        eventPrintColors.add(Colors.purpleAccent);
         int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
         eventLog.add(delveCombatEvents[en].fight(playerCharacter));
         events++;
       }
       else if ((delveRand < 50) && (delveRand >= 33)) {
         /*Trap*/
+        eventPrintColors.add(Colors.red);
         int en = Random().nextInt(delveRand*_seconds + delveTrapEvents.length) % delveTrapEvents.length;
         eventLog.add(delveTrapEvents[en].trap(playerCharacter));
         events++;
       }
       else if ((delveRand < 63) && (delveRand >= 50)) {
         /*Encounter*/
+        eventPrintColors.add(Colors.purpleAccent);
         int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
         eventLog.add(delveCombatEvents[en].fight(playerCharacter));
         events++;
       }
       else if ((delveRand < 72) && (delveRand >= 63)) {
         /*Trap*/
+        eventPrintColors.add(Colors.red);
         int en = Random().nextInt(delveRand*_seconds + delveTrapEvents.length) % delveTrapEvents.length;
         eventLog.add(delveTrapEvents[en].trap(playerCharacter));
         events++;
       }
        else {
         /*Filler*/
+        eventPrintColors.add(Colors.white);
         int en = Random().nextInt(delveRand*_seconds + delveFillerEvents.length) % delveFillerEvents.length;
         eventLog.add(delveFillerEvents[en].happen(playerCharacter));
         events++;
@@ -217,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void timeEffect () {
-      setState(() {   _seconds++;  playerCharacter.modHP(0.1); playerCharacter.modMP(0.1);});
+      setState(() {   _seconds++;  playerCharacter.modHP(0.1); playerCharacter.modMP(0.1); playerCharacter.applyTraits();});
   }
 
   void increaseGold(int y) {
@@ -318,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: BoxDecoration(
                     border: Border.all(width: 3)
                   ),
-                  child: Image.asset(playerCharacter.portraitID)),
+                  child: Image.asset(playerCharacter.portraitID, width: MediaQuery.of(context).size.height/6,height:  MediaQuery.of(context).size.height/6)),
                   Row(
                     children: [
                       Text("Level: ${playerCharacter.level} XP: ${playerCharacter.xp}/${playerCharacter.xpNeeded}"),
@@ -326,7 +342,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                   Text("Attributes", style: TextStyle(fontSize: 15),),
-                  SizedBox(width: 250,height: 170, child: ListView.builder(
+                  SizedBox(width: 250,height: MediaQuery.of(context).size.height/5, child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       padding: EdgeInsets.all(8),
@@ -334,7 +350,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemBuilder: (context, index) {
                         return Text("${playerCharacter.attributes[index].name}: ${playerCharacter.attributes[index].val}");
                       }),
-                    )
+                    ),
+                    Text("Traits", style: TextStyle(fontSize: 25)),
+                SizedBox(
+                  width: 300,height:  MediaQuery.of(context).size.height/8,
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      padding: EdgeInsets.all(8),
+                      shrinkWrap: true,
+                      itemCount: playerCharacter.traits.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                        child: 
+                        ListTile(
+                        title: Text( "${playerCharacter.traits[index].name}", style: Theme.of(context).textTheme.titleSmall),
+                        subtitle: Text( "${playerCharacter.traits[index].description}")
+                    ),
+                  );
+                }),
+              )
                   
               ],
             ),
@@ -347,14 +381,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(onPressed: _delve, child: Text("DELVE!")),
                 Text("LOG"),
                   Divider(),
-                  SizedBox( width: 400, height:  MediaQuery.of(context).size.height - 300,
+                  SizedBox( width: 400, height:  MediaQuery.of(context).size.height/2,
+                  
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       padding: EdgeInsets.all(8),
                       itemCount: eventLog.length,
                       itemBuilder: (context, index) {
-                        return Text("$index. ${eventLog[index]}");
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            border: BoxBorder.all(color: eventPrintColors[index])
+                          ),
+                          child: Text("${eventLog[index]}", style: TextStyle(color: eventPrintColors[index]),)
+                        );
                       }),
                     )
                   
@@ -404,14 +445,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       itemBuilder: (context, index) {
                         return Card(
                         child: ListTile(
-                        title: Text( "${playerCharacter.spells[index].spellName} (MP: ${playerCharacter.spells[index].spellCost})", style: Theme.of(context).textTheme.bodyLarge,),
+                        title: Text( "${playerCharacter.spells[index].spellName} (MP: ${playerCharacter.spells[index].spellCost})", style: Theme.of(context).textTheme.titleSmall,),
                        trailing: IconButton(icon: Icon(Icons.star, color: Theme.of(context).colorScheme.primary),
                         onPressed: () => castSpell(index),
                       ),
                     ),
                   );
                 }),
-              )
+              ),
               
               ],
             )
