@@ -4,6 +4,11 @@ import 'character.dart';
 import 'delve_event.dart';
 import 'dart:math';
 
+var _sedClr =  Color.fromARGB(255, 2, 0, 143);
+var lightScheme = ColorScheme.fromSeed(seedColor: _sedClr, brightness: Brightness.light);
+var darkScheme = ColorScheme.fromSeed(seedColor: _sedClr, brightness: Brightness.dark);
+ThemeMode _themeMode = ThemeMode.system;
+bool isDark = false;
 void main() {
   runApp(const MyApp());
 }
@@ -16,9 +21,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 2, 0, 143))
-      ),
+      theme: ThemeData(colorScheme: lightScheme),
+      darkTheme: ThemeData(colorScheme: darkScheme),
+      themeMode: _themeMode,
       home: const MyHomePage(title: 'A Flutterful Adventure'),
     );
   }
@@ -120,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[6].val = 6;
       playerCharacter.attributes[7].val = 4;
       playerCharacter.baseWeaponDie = 10;
-      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 15, 3, "healing"));
+      playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
       playerCharacter.setPronouns("He","His","Him");
       playerCharacter.setPortrait("assets/images/WolfFighter.png");
       playerCharacter.setSpecies("Wolf");
@@ -153,6 +158,18 @@ class _MyHomePageState extends State<MyHomePage> {
     playerCharacter.fillHP();
     playerCharacter.fillMP();
     setPrices();
+  }
+
+  void changeMode() {
+    setState(() {
+      if (!isDark) {
+      _themeMode = ThemeMode.dark;
+      isDark = true;
+    } else {
+      _themeMode = ThemeMode.light;
+      isDark = false;
+    }
+    });
   }
 
   void _delve() {
@@ -311,10 +328,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).secondaryHeaderColor,
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            IconButton(onPressed: changeMode, icon: isDark ? Icon(Icons.nights_stay):Icon(Icons.sunny)),
+            Text("STATS"),
+            Text("HP: ${playerCharacter.currentHP.toInt()}/${playerCharacter.stats[0]}"),
+            Text("MP: ${playerCharacter.currentMP.toInt()}/${playerCharacter.stats[1]}"),
+            Text("Attack: ${playerCharacter.stats[2]}"),
+            Text("Defense: ${playerCharacter.stats[3]}"),
+            Text("Damage Bonus: ${playerCharacter.stats[4]}"),
+            Text("Cast Bonus: ${playerCharacter.stats[5]}"),
+            Text("Critical %: ${playerCharacter.stats[9]}"),
+            Text("Discount: ${playerCharacter.stats[10]}"),
+            Text("Saving Throws", style: Theme.of(context).textTheme.titleSmall,),
+            Text("Fortitude: ${playerCharacter.stats[6]}"),
+            Text("Reflex: ${playerCharacter.stats[7]}"),
+            Text("Reflex: ${playerCharacter.stats[8]}"),
+          ],
+        ),
       ),
       body: Center(
         child: Row(
@@ -411,7 +449,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 Text("HP: ${playerCharacter.currentHP.toInt()}/${playerCharacter.stats[0]}"),
                 Text("MP: ${playerCharacter.currentMP.toInt()}/${playerCharacter.stats[1]}"),
                 Text("Time passed (in seconds): $_seconds"),
-                Text("${playerCharacter.stats}"),
                 Text("Gold: ${playerCharacter.gold}"),
                 Text("INVENTORY", style: TextStyle(fontSize: 25)),
                 Row(
