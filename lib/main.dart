@@ -329,7 +329,12 @@ class _MyHomePageState extends State<MyHomePage> {
   
   Widget build(BuildContext context) {
     
-    return Scaffold(
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(colorScheme: lightScheme),
+      darkTheme: ThemeData(colorScheme: darkScheme),
+      themeMode: _themeMode,
+      home: Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).secondaryHeaderColor,
         title: Text(widget.title),
@@ -338,7 +343,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             IconButton(onPressed: changeMode, icon: isDark ? Icon(Icons.nights_stay):Icon(Icons.sunny)),
-            Text("STATS"),
+            Text("STATS", style: Theme.of(context).textTheme.titleMedium,),
             Text("HP: ${playerCharacter.currentHP.toInt()}/${playerCharacter.stats[0]}"),
             Text("MP: ${playerCharacter.currentMP.toInt()}/${playerCharacter.stats[1]}"),
             Text("Attack: ${playerCharacter.stats[2]}"),
@@ -496,6 +501,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    )
     );
   }
 }
