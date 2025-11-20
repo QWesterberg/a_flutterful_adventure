@@ -5,7 +5,7 @@ import 'delve_event.dart';
 import 'dart:math';
 
 var _sedClr =  Color.fromARGB(255, 2, 0, 143);
-var lightScheme = ColorScheme.fromSeed(seedColor: _sedClr, brightness: Brightness.light);
+var lightScheme = ColorScheme.fromSeed(seedColor:_sedClr, brightness: Brightness.light);
 var darkScheme = ColorScheme.fromSeed(seedColor: _sedClr, brightness: Brightness.dark);
 ThemeMode _themeMode = ThemeMode.system;
 bool isDark = false;
@@ -56,9 +56,18 @@ class _MyHomePageState extends State<MyHomePage> {
   ComEvent(MonsterCharacter("crumbling skeleton", 5, 10, 3, 0)),
   ComEvent(MonsterCharacter("limping zombie", 5, 12, 3, 1)),
   ComEvent(MonsterCharacter("small slime", 5, 8, 3, 2)),
-  ComEvent(MonsterCharacter("imp", 6, 12, 3, 3)),
-  ComEvent(MonsterCharacter("skeleton", 5, 16, 5, 0)),
-  ComEvent(MonsterCharacter("zombie",3, 20, 5, 1)),
+  ComEvent(MonsterCharacter("mischevious imp", 6, 12, 3, 3)),
+  ComEvent(MonsterCharacter("skeleton", 8, 16, 5, 0)),
+  ComEvent(MonsterCharacter("zombie",8, 20, 5, 1)),
+  ComEvent(MonsterCharacter("medium slime", 8, 16, 5, 2)),
+  ComEvent(MonsterCharacter("vicious imp", 10, 20, 5, 3)),
+  ];
+  List delveCombatEvents2 = [
+    /*String nam, int xp, int gol, int lvl, int type */
+  ComEvent(MonsterCharacter("skeleton warrior", 12, 20, 8, 0)),
+  ComEvent(MonsterCharacter("chunky zombie", 12, 20, 8, 1)),
+  ComEvent(MonsterCharacter("large slime", 12, 12, 8, 2)),
+  ComEvent(MonsterCharacter("hellhound", 14, 28, 8, 3)),
   ];
   List delveTrapEvents = [
     /*int st, double dmg, int dc, String hurtString, String missString */
@@ -186,8 +195,19 @@ class _MyHomePageState extends State<MyHomePage> {
       else if ((delveRand < 33) && (delveRand >= 10)) {
         /*Encounter*/
         eventPrintColors.add(Colors.purpleAccent);
-        int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
-        eventLog.add(delveCombatEvents[en].fight(playerCharacter));
+        if (playerCharacter.level > 2) {
+          int r = Random().nextInt(2);
+          if (r == 0) {
+            int en = Random().nextInt(_seconds +delveCombatEvents2.length) % delveCombatEvents2.length;
+            eventLog.add(delveCombatEvents2[en].fight(playerCharacter));
+          } else {
+            int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
+            eventLog.add(delveCombatEvents[en].fight(playerCharacter));
+          }
+        } else {
+          int en = Random().nextInt(_seconds +delveCombatEvents.length) % delveCombatEvents.length;
+          eventLog.add(delveCombatEvents[en].fight(playerCharacter));
+        }  
         events++;
       }
       else if ((delveRand < 50) && (delveRand >= 33)) {
@@ -329,12 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
   Widget build(BuildContext context) {
     
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: lightScheme),
-      darkTheme: ThemeData(colorScheme: darkScheme),
-      themeMode: _themeMode,
-      home: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).secondaryHeaderColor,
         title: Text(widget.title),
@@ -343,7 +358,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             IconButton(onPressed: changeMode, icon: isDark ? Icon(Icons.nights_stay):Icon(Icons.sunny)),
-            Text("STATS", style: Theme.of(context).textTheme.titleMedium,),
+            Text("STATS"),
             Text("HP: ${playerCharacter.currentHP.toInt()}/${playerCharacter.stats[0]}"),
             Text("MP: ${playerCharacter.currentMP.toInt()}/${playerCharacter.stats[1]}"),
             Text("Attack: ${playerCharacter.stats[2]}"),
@@ -501,7 +516,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-    )
     );
   }
 }
