@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.setPortrait("assets/images/WolfFighter.png");
       playerCharacter.setSpecies("Wolf");
       playerCharacter.setJob("Fighter");
-      playerCharacter.traits.add(Trait("Healing Wind", "Naturally heals faster.", 15, 2, 0));
+      playerCharacter.traits.add(Trait("Healing Wind", "Naturally heals faster.", 5, 2, 0));
       playerCharacter.level = 1;
     } else if (playerCharacter.name == "Etta Hilsby") {
       playerCharacter.attributes[0].val = 3;
@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.attributes[5].val = 10;
       playerCharacter.attributes[6].val = 4;
       playerCharacter.attributes[7].val = 6;
-      playerCharacter.baseWeaponDie = 25;
+      playerCharacter.baseWeaponDie = 16;
       playerCharacter.spells.add(Spell("Healing", "A basic healing spell.", 5, 3, "healing"));
       playerCharacter.spells.add(Spell("Insight", "Gather knowledge through magic.", 10, 0, "xpGain"));
       playerCharacter.setPronouns("She","Her","Her");
@@ -166,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     playerCharacter.setBaseStats();
     playerCharacter.fillHP();
     playerCharacter.fillMP();
+    playerCharacter.applyTraits();
     setPrices();
   }
 
@@ -270,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void timeEffect () {
-      setState(() {   _seconds++;  playerCharacter.modHP(0.1); playerCharacter.modMP(0.1); playerCharacter.applyTraits();});
+      setState(() {   _seconds++;  playerCharacter.recover();});
   }
 
   void increaseGold(int y) {
@@ -332,6 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
         playerCharacter.gold -= armorUpgradePrice; playerCharacter.armorLevel++;
         armorUpgradePrice = 100 * playerCharacter.armorLevel;
         setPrices();
+        playerCharacter.setBaseStats();
       }
       });
   }
@@ -341,6 +343,7 @@ class _MyHomePageState extends State<MyHomePage> {
         playerCharacter.gold -= weaponUpgradePrice; playerCharacter.weaponLevel++;
         weaponUpgradePrice = 100 * playerCharacter.weaponLevel;
         setPrices();
+        playerCharacter.setBaseStats();
       }});
   }
 
@@ -358,9 +361,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             IconButton(onPressed: changeMode, icon: isDark ? Icon(Icons.nights_stay):Icon(Icons.sunny)),
-            Text("STATS"),
-            Text("HP: ${playerCharacter.currentHP.toInt()}/${playerCharacter.stats[0]}"),
-            Text("MP: ${playerCharacter.currentMP.toInt()}/${playerCharacter.stats[1]}"),
+            Text("STATS",style: Theme.of(context).textTheme.titleSmall),
+            Text("HP: ${playerCharacter.currentHP.toStringAsFixed(1)}/${playerCharacter.stats[0]} (${playerCharacter.healRate.toStringAsFixed(3)} per second)",),
+            Text("MP: ${playerCharacter.currentMP.toStringAsFixed(1)}/${playerCharacter.stats[1]} (${playerCharacter.magicRate.toStringAsFixed(3)} per second)"),
             Text("Attack: ${playerCharacter.stats[2]}"),
             Text("Defense: ${playerCharacter.stats[3]}"),
             Text("Damage Bonus: ${playerCharacter.stats[4]}"),
@@ -370,7 +373,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Text("Saving Throws", style: Theme.of(context).textTheme.titleSmall,),
             Text("Fortitude: ${playerCharacter.stats[6]}"),
             Text("Reflex: ${playerCharacter.stats[7]}"),
-            Text("Reflex: ${playerCharacter.stats[8]}"),
+            Text("Willpower: ${playerCharacter.stats[8]}"),
+            Text("Equipment", style: Theme.of(context).textTheme.titleSmall,),
+            Text("Weapon Die: d${playerCharacter.baseWeaponDie}"),
+            Text("Damage Threshold: ${playerCharacter.armorLevel}"),
           ],
         ),
       ),

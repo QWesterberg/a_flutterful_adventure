@@ -9,6 +9,8 @@ abstract class BaseCharacter<T extends Object> {
   
   int gold = 0, level = 1, hpMod = 10, mpMod = 10, armorLevel = 1, weaponLevel = 1, baseWeaponDie = 6;
 
+  double healRate = 0.1, magicRate = 0.1;
+
   /*Stats by index:
   0 - Hit Points: How much damage you can take.
   1 - Magic Points: How much you can cast spells.
@@ -49,6 +51,11 @@ abstract class BaseCharacter<T extends Object> {
     lp1 = pronoun1.toLowerCase();
     lp2 = pronoun2.toLowerCase();
     lp3 = pronoun3.toLowerCase();
+  }
+
+  void recover() {
+    modHP(healRate);
+    modMP(magicRate);
   }
 
 
@@ -111,8 +118,8 @@ abstract class BaseCharacter<T extends Object> {
     stats[0] = attributes[0].mod + attributes[3].mod*2 + hpMod;
     stats[1] = attributes[4].mod + attributes[5].mod*2 + mpMod;
     stats[2] = attributes[2].mod;
-    stats[3] = 10 + attributes[1].mod + attributes[6].mod;
-    stats[4] = attributes[0].mod;
+    stats[3] = 10 + attributes[1].mod + attributes[6].mod + armorLevel;
+    stats[4] = attributes[0].mod + weaponLevel;
     stats[5] = attributes[4].mod;
     stats[6] = attributes[3].mod + attributes[7].mod;
     stats[7] = attributes[1].mod + attributes[7].mod;
@@ -169,8 +176,10 @@ class PlayerCharacter extends BaseCharacter{
       super.mpMod += 5;
       super.attributes[Random().nextInt(8)].upVal(1);
       super.setBaseStats();
+      applyTraits();
       super.fillHP();
       super.fillMP();
+      
     }
   }
 
@@ -227,12 +236,10 @@ void applyTrait(Trait trait) {
     }
     else if (trait.typeNum == 2) {
       if (trait.typeNum2 == 0) {
-        if (super.currentHP < super.stats[0]) {          super.modHP(trait.mod/100) ;        }
-        else {          super.fillHP();        }
+        healRate += (trait.mod/100);
       }
       if (trait.typeNum2 == 1) {
-        if (super.currentMP < super.stats[1]) {          super.modMP(trait.mod/100) ;        }
-        else {          super.fillMP();        }
+        magicRate += (trait.mod/100);
       }
       
     }
@@ -307,9 +314,10 @@ class MonsterCharacter extends BaseCharacter {
   */
 
   void attackPlayer (PlayerCharacter pc) {
-    if (super.currentMP >= 5) {
+    if (super.currentMP >= 5 && canCast == true) {
       int st = spellSTInts[Random().nextInt(spellSTInts.length)];
-      autoSpellAttack(pc, st, attributes[4].val*2, (level + stats[5]).toInt());
+      autoSpellAttack(pc, st, stats[5]*2 + 10, (level + stats[5]).toInt());
+      
     } else {
       autoAttack(pc);
     }
@@ -320,12 +328,12 @@ class MonsterCharacter extends BaseCharacter {
   }
 
   void autoSpellAttack (PlayerCharacter pc, int st, int dc, int dmg) {
-    double x = (Random().nextInt(dmg) + stats[5])/2;
+    double x = (Random().nextInt(dmg) + stats[5] + 10)/(-2);
     if (pc.makeSavingThrow(st, dc) == false) {
-      x*= 2;
+      x *= 2;
     }
-    pc.modHP(-x);
-    currentMP-= 5;
+    pc.modHP(x);
+    currentMP -= 5;
   }
 
   num monsterAttack () {
