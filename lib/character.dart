@@ -172,6 +172,14 @@ class PlayerCharacter extends BaseCharacter{
       xp -= xpNeeded;
       level++;
       xpNeeded *= super.level + 2;
+      if (job == "Fighter") {
+        super.attributes[0].upVal(1);
+        super.attributes[2].upVal(1);
+      }
+      else if (job == "Wizard") {
+        super.attributes[4].upVal(1);
+        super.attributes[5].upVal(1);
+      }
       super.hpMod += 5;
       super.mpMod += 5;
       super.attributes[Random().nextInt(8)].upVal(1);
@@ -282,28 +290,35 @@ class MonsterCharacter extends BaseCharacter {
   Feel free to add more!
   */
 
-  List spellSTInts = <int>[];
+  List spellSTInts = <int>[6];
 
   void monsterInit() {
     super.setRandAttributes(super.level, 5);
     switch(typeInt) {
       case 0:
       super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[7].setVal(3);
+      super.hpMod = 10;
       case 1:
       super.attributes[0].upVal(4); super.attributes[1].upVal(-3); super.attributes[2].upVal(-3); super.attributes[3].upVal(4);      
       super.attributes[4].setVal(3); super.attributes[5].setVal(3); super.attributes[6].setVal(3); super.attributes[7].setVal(3);
+      super.hpMod = 15;
       case 2:
       super.attributes[1].upVal(-1); super.attributes[2].upVal(-1); super.attributes[3].upVal(1);      
       super.attributes[4].upVal(-1); super.attributes[5].upVal(-1);
+      super.hpMod = 15;
       case 3:
       super.attributes[0].upVal(1); super.attributes[1].upVal(1); super.attributes[2].upVal(1); super.attributes[3].upVal(1);      
       super.attributes[4].upVal(1); super.attributes[5].upVal(1); super.attributes[6].upVal(1); super.attributes[7].upVal(1);
       super.baseWeaponDie = 8;
+      super.hpMod = 11;
+      super.mpMod = 11;
       canCast = true;
       spellSTInts.add(7);
       default: 
       super.setRandAttributes(super.level, 5);
     }
+    hpMod *= super.level;
+    mpMod *= super.level;
     super.setBaseStats();
   }
 
@@ -316,7 +331,8 @@ class MonsterCharacter extends BaseCharacter {
   void attackPlayer (PlayerCharacter pc) {
     if (super.currentMP >= 5 && canCast == true) {
       int st = spellSTInts[Random().nextInt(spellSTInts.length)];
-      autoSpellAttack(pc, st, stats[5]*2 + 10, (level + stats[5]).toInt());
+      int d = (level + super.stats[5]).toInt();
+      autoSpellAttack(pc, st, super.stats[5]*2 + 10, d);
       
     } else {
       autoAttack(pc);
@@ -328,10 +344,11 @@ class MonsterCharacter extends BaseCharacter {
   }
 
   void autoSpellAttack (PlayerCharacter pc, int st, int dc, int dmg) {
-    double x = (Random().nextInt(dmg) + stats[5] + 10)/(-2);
+    double x = (Random().nextInt(dmg) + super.stats[5] + 10)/(2);
     if (pc.makeSavingThrow(st, dc) == false) {
       x *= 2;
     }
+    x *= (-1);
     pc.modHP(x);
     currentMP -= 5;
   }

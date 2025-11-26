@@ -13,6 +13,8 @@ import "character.dart";
 
   String fight(PlayerCharacter pc){
     monster.monsterInit();
+    log("${monster.name} encountered.");
+     log("Player: ${pc.currentHP} Monster ${monster.currentHP}");
     while ((pc.currentHP > 0) && (monster.currentHP > 0)) {
       if (pc.hitsAttack(monster.stats[2])) {
         monster.takeDamage(pc.weaponDamage());

@@ -4,7 +4,7 @@ import 'character.dart';
 import 'delve_event.dart';
 import 'dart:math';
 
-var _sedClr =  Color.fromARGB(255, 2, 0, 143);
+var _sedClr =  Color.fromARGB(255, 0, 143, 24);
 var lightScheme = ColorScheme.fromSeed(seedColor:_sedClr, brightness: Brightness.light);
 var darkScheme = ColorScheme.fromSeed(seedColor: _sedClr, brightness: Brightness.dark);
 ThemeMode _themeMode = ThemeMode.system;
@@ -21,10 +21,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: lightScheme),
-      darkTheme: ThemeData(colorScheme: darkScheme),
+      theme: ThemeData(colorScheme: lightScheme, textTheme: TextTheme(
+        displayLarge: TextStyle(fontWeight: FontWeight.bold,),
+        titleLarge: TextStyle(fontWeight: FontWeight.bold, ),
+        )),
+      darkTheme: ThemeData(colorScheme: darkScheme, textTheme: TextTheme(
+        displayLarge: TextStyle(fontWeight: FontWeight.bold,),
+        titleLarge: TextStyle(fontWeight: FontWeight.bold, ),
+        )),
       themeMode: _themeMode,
-      home: const MyHomePage(title: 'A Flutterful Adventure'),
+      home: const MyHomePage(title: 'Forager\'s Delve'),
     );
   }
 }
@@ -54,20 +60,20 @@ class _MyHomePageState extends State<MyHomePage> {
   List delveCombatEvents = [
     /*String nam, int xp, int gol, int lvl, int type */
   ComEvent(MonsterCharacter("crumbling skeleton", 5, 10, 3, 0)),
-  ComEvent(MonsterCharacter("limping zombie", 5, 12, 3, 1)),
+  ComEvent(MonsterCharacter("limping zombie", 5, 8, 3, 1)),
   ComEvent(MonsterCharacter("small slime", 5, 8, 3, 2)),
   ComEvent(MonsterCharacter("mischevious imp", 6, 12, 3, 3)),
-  ComEvent(MonsterCharacter("skeleton", 8, 16, 5, 0)),
-  ComEvent(MonsterCharacter("zombie",8, 20, 5, 1)),
-  ComEvent(MonsterCharacter("medium slime", 8, 16, 5, 2)),
-  ComEvent(MonsterCharacter("vicious imp", 10, 20, 5, 3)),
+  ComEvent(MonsterCharacter("skeleton", 20, 32, 5, 0)),
+  ComEvent(MonsterCharacter("zombie",20, 20, 5, 1)),
+  ComEvent(MonsterCharacter("medium slime", 20, 16, 5, 2)),
+  ComEvent(MonsterCharacter("vicious imp", 24, 20, 5, 3)),
   ];
   List delveCombatEvents2 = [
     /*String nam, int xp, int gol, int lvl, int type */
-  ComEvent(MonsterCharacter("skeleton warrior", 12, 20, 8, 0)),
-  ComEvent(MonsterCharacter("chunky zombie", 12, 20, 8, 1)),
-  ComEvent(MonsterCharacter("large slime", 12, 12, 8, 2)),
-  ComEvent(MonsterCharacter("hellhound", 14, 28, 8, 3)),
+  ComEvent(MonsterCharacter("skeleton warrior", 50, 25, 8, 0)),
+  ComEvent(MonsterCharacter("chunky zombie", 50, 25, 8, 1)),
+  ComEvent(MonsterCharacter("large slime", 50, 30, 8, 2)),
+  ComEvent(MonsterCharacter("hellhound", 60, 40, 8, 3)),
   ];
   List delveTrapEvents = [
     /*int st, double dmg, int dc, String hurtString, String missString */
@@ -139,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
       playerCharacter.setPortrait("assets/images/WolfFighter.png");
       playerCharacter.setSpecies("Wolf");
       playerCharacter.setJob("Fighter");
+      playerCharacter.hpMod = 15;
       playerCharacter.traits.add(Trait("Healing Wind", "Naturally heals faster.", 5, 2, 0));
       playerCharacter.level = 1;
     } else if (playerCharacter.name == "Etta Hilsby") {
@@ -499,7 +506,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Text("SPELLS", style: TextStyle(fontSize: 25)),
                 SizedBox(
-                  width: 250,height: 200,
+                  width: MediaQuery.of(context).size.width/5,height: MediaQuery.of(context).size.height/5,
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
                       padding: EdgeInsets.all(8),
