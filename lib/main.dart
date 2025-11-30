@@ -388,7 +388,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Center(
-        child: Row(
+        child: Container(
+          margin: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.amber, width: 8),
+            gradient: LinearGradient(colors: [ Theme.of(context).cardColor,
+              Theme.of(context).secondaryHeaderColor, Theme.of(context).primaryColor,
+            ])
+          ),
+          child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -527,6 +535,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             )
           ],
+        ),
         ),
       ),
     );
