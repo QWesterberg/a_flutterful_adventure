@@ -392,9 +392,13 @@ class _MyHomePageState extends State<MyHomePage> {
           margin: EdgeInsets.all(8),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.amber, width: 8),
-            gradient: LinearGradient(colors: [ Theme.of(context).cardColor,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [ Theme.of(context).cardColor,
               Theme.of(context).secondaryHeaderColor, Theme.of(context).primaryColor,
-            ])
+            ], 
+            )
           ),
           child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
