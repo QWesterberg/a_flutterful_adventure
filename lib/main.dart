@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Forager\'s Delve',
       theme: ThemeData(colorScheme: lightScheme, textTheme: TextTheme(
         displayLarge: TextStyle(fontWeight: FontWeight.bold,),
         titleLarge: TextStyle(fontWeight: FontWeight.bold, ),
