@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Forager\'s Delve',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(colorScheme: lightScheme, textTheme: TextTheme(
         displayLarge: TextStyle(fontWeight: FontWeight.bold,),
         titleLarge: TextStyle(fontWeight: FontWeight.bold, ),
